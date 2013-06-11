@@ -22,8 +22,8 @@ http.createServer(function(request, response) {
   }
 
   else {
-      response.writeHead(200, {"Content-Type": "text/html"});
-      response.write("doesn't exist");
+      response.writeHead(404, {"Content-Type": "text/html"});
+      response.write("404: File not found.");
   }
 
   response.end();
