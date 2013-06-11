@@ -23,7 +23,7 @@ http.createServer(function(request, response) {
 
   else {
       response.writeHead(404, {"Content-Type": "text/html"});
-      response.write("404: File not found.");
+      response.write("404: ile not found.");
   }
 
   response.end();
