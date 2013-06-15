@@ -2,14 +2,12 @@ var http = require("http");
 var fs = require('fs');
 var url = require('url');
 var path = require('path');
+var qs = require('querystring');
+var ex = require('express');
 
 http.createServer(function(request, response) {
 
   console.log(request.url);
-
-  // var filePath = request.url;
-  // filePath = '.' + filePath;
-
 
   if (request.method === "GET"){
     var filePath = request.url;
@@ -17,7 +15,7 @@ http.createServer(function(request, response) {
       filePath = "/index.html";
     }
     filePath = '.' + filePath;
-    console.log(request);
+
 
     fs.exists(filePath, function(boolExists) {
       if (boolExists) {
@@ -34,6 +32,28 @@ http.createServer(function(request, response) {
       }
     });
   } else if (request.method === "POST") {
+
+      //ok we're giving up on this as there is no way to be get the binary image data. 
+
+      var body = '';
+      request.on('data', function (data) {
+        console.log(typeof data );
+        body += data;
+      });
+      request.on('end', function () {
+        //console.log(body)
+        //var POST = qs.parse(body);
+        //console.log(POST)
+            // use POST
+        console.log("UPLOAD FILE!!!!!!")
+        //console.log(POST['uploadfile'])
+
+      });
+
+      response.writeHead(200, {"Content-Type": "text/html"});
+      response.write("I am posting some stuff!");
+      response.end();
+
   } else {
     //BAD MSG
   };
