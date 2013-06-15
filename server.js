@@ -5,6 +5,18 @@ var path = require('path');
 var qs = require('querystring');
 var ex = require('express');
 
+//how to generalize this so we can get set the path ourselves.
+//start by setting the path in a variable.
+//for this route
+//if the request is get
+//then do this
+//if the request is post
+//then do this
+
+//ok, can we write a function that says, requested url is this?
+
+
+
 http.createServer(function(request, response) {
 
   console.log(request.url);
@@ -33,7 +45,7 @@ http.createServer(function(request, response) {
     });
   } else if (request.method === "POST") {
 
-      //ok we're giving up on this as there is no way to be get the binary image data. 
+      //ok we're giving up on this as there is no way to be get the binary image data.
 
       var body = '';
       request.on('data', function (data) {
@@ -58,5 +70,10 @@ http.createServer(function(request, response) {
     //BAD MSG
   };
 }).listen(8888);
+
+
+function i_listen_to_stuff(request) {
+    console.log("request is:" + )
+}
 
 console.log("Server has started.");
