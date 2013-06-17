@@ -6,76 +6,55 @@ var qs = require('querystring');
 var ex = require('express');
 
 
-var myhandler = function get_index(){
+var myhandler = function (req, res){
     console.log("handler for getting index");
-}
 
-var allowed_routes = {};
-allowed_routes[["/", "GET"]] = myhandler;
-console.log(allowed_routes);
+    var mymethod = req.method
+    var myurl = req.url
+    console.log("url and method in handler" + mymethod + myurl);
 
-
-
-http.createServer(function(request, response) {
-
-  //console.log(request.url);
-  i_listen_to_stuff(request);
-
-  if (request.method === "GET"){
-    var filePath = request.url;
-    if (filePath === "/"){
-      filePath = "/index.html";
+    if (myurl === "/"){
+      myurl = "/index.html";
     }
-    filePath = '.' + filePath;
+    myurl = '.' + myurl;
+    //does the file we want exist?
+    fs.exists(myurl, function(boolExists) {
+       if (boolExists) {
 
-
-    fs.exists(filePath, function(boolExists) {
-      if (boolExists) {
-        fs.readFile(filePath, "utf8", function(err, data){
-          response.writeHead(200, {"Content-Type": "text/html"});
-          response.write(data);
-          response.end();
+        fs.readFile(myurl, "utf8", function(err, data){
+          res.writeHead(200, {"Content-Type": "text/html"});
+          res.write(data);
+          res.end();
         });
       }
       else {
-        response.writeHead(404, {"Content-Type": "text/html"});
-        response.write("404: File not found.");
-        response.end();
+        res.writeHead(404, {"Content-Type": "text/html"});
+        res.write("404: File not found.");
+        res.end();
       }
     });
-  } else if (request.method === "POST") {
+}
 
-      //ok we're giving up on this as there is no way to be get the binary image data.
+var allowed_routes = {};
+//ok this is some badness, should be able to have / as the root and then
+allowed_routes[["/", "GET"]] = myhandler;
+allowed_routes[["/awesome.txt", "GET"]] = myhandler;
+console.log(allowed_routes);
 
-      var body = '';
-      request.on('data', function (data) {
-        console.log(typeof data );
-        body += data;
-      });
-      request.on('end', function () {
-       
-        console.log("UPLOAD FILE!!!!!!");
-        console.log(request.uploadfile);
+http.createServer(function(req, res) {
 
-      });
+  i_listen_to_stuff(req, res);
 
-      response.writeHead(200, {"Content-Type": "text/html"});
-      response.write("I am posting some stuff!");
-      response.end();
-
-  } else {
-    //BAD MSG
-  };
 }).listen(8888);
 
-function is_allowed_route(request) {
-    var myrequest = request;
-    var myurl = request.url;
-    var mymethod = request.method;
+function is_allowed_route(req) {
+    var myrequest = req;
+    var myurl = req.url;
+    var mymethod = req.method;
 
-    console.log("request is:" + [request.url, request.method] );
+    console.log("request is:" + [req.url, req.method] );
 
-    if ([request.url, request.method] in allowed_routes) {
+    if ([req.url, req.method] in allowed_routes) {
         console.log("This is an allowed route!");
         return true;
     }
@@ -84,25 +63,26 @@ function is_allowed_route(request) {
     }
 }
 
-function i_listen_to_stuff(request) {
-    //// YAY!!! DONE!!!!!
-    var myurl = request.url;
-    var mymethod = request.method;
-    console.log("request is:" + myurl);
-    // do we need to pass request, is this in the closure?
-    if (is_allowed_route(request)) {
+function i_listen_to_stuff(req, res) {
+
+    var myurl = req.url;
+    var mymethod = req.method;
+    console.log("req is:" + myurl);
+    // do we need to pass req, is this in the closure?
+
+    //hmm i'm not sure i understand what mary thought i should do
+    //if i have a general handler, how can i call it before i know i have a valid route?
+    //if my route doesn't exist, it won't have a handler attached to it
+    //Handler.handle, how to write an abstract object like this? 
+    if (is_allowed_route(req)) {
         //call the handler
-        allowed_routes[[myurl, mymethod]]();
+        allowed_routes[[myurl, mymethod]](req, res);
         //ok some error handling should be happening here
     }
     else {
        console.log("This is not an allowed route.");
        //some error page should be printed out here.
     }
-}
-
-function get_index(){
-    console.log("handler for getting index");
 }
 
 console.log("Server has started.");
