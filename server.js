@@ -5,7 +5,6 @@ var path = require('path');
 var qs = require('querystring');
 var ex = require('express');
 
-
 var myhandler = function (req, res){
     console.log("handler for getting index");
 
@@ -14,38 +13,27 @@ var myhandler = function (req, res){
     console.log("url and method in handler" + mymethod + myurl);
 
     if (myurl === "/"){
-      myurl = "/index.html";
+        myurl = "/index.html";
     }
     myurl = '.' + myurl;
+
     //does the file we want exist?
     fs.exists(myurl, function(boolExists) {
-       if (boolExists) {
+        if (boolExists) {
 
-        fs.readFile(myurl, "utf8", function(err, data){
-          res.writeHead(200, {"Content-Type": "text/html"});
-          res.write(data);
-          res.end();
-        });
-      }
-      else {
-        res.writeHead(404, {"Content-Type": "text/html"});
-        res.write("404: File not found.");
-        res.end();
-      }
+            fs.readFile(myurl, "utf8", function(err, data){
+                res.writeHead(200, {"Content-Type": "text/html"});
+                res.write(data);
+                res.end();
+            });
+        }
+        else {
+            res.writeHead(404, {"Content-Type": "text/html"});
+            res.write("404: File not found.");
+            res.end();
+        }
     });
 }
-
-var allowed_routes = {};
-//ok this is some badness, should be able to have / as the root and then
-allowed_routes[["/", "GET"]] = myhandler;
-allowed_routes[["/awesome.txt", "GET"]] = myhandler;
-console.log(allowed_routes);
-
-http.createServer(function(req, res) {
-
-  i_listen_to_stuff(req, res);
-
-}).listen(8888);
 
 function is_allowed_route(req) {
     var myrequest = req;
@@ -73,16 +61,34 @@ function i_listen_to_stuff(req, res) {
     //hmm i'm not sure i understand what mary thought i should do
     //if i have a general handler, how can i call it before i know i have a valid route?
     //if my route doesn't exist, it won't have a handler attached to it
-    //Handler.handle, how to write an abstract object like this? 
+    //Handler.handle, how to write an abstract object like this?
     if (is_allowed_route(req)) {
         //call the handler
         allowed_routes[[myurl, mymethod]](req, res);
         //ok some error handling should be happening here
     }
     else {
-       console.log("This is not an allowed route.");
-       //some error page should be printed out here.
+        console.log("This is not an allowed route.");
+        //some error page should be printed out here.
     }
 }
 
-console.log("Server has started.");
+var allowed_routes = {};
+//ok this is some badness, should be able to have / as the root and then
+allowed_routes[["/", "GET"]] = myhandler;
+allowed_routes[["/awesome.txt", "GET"]] = myhandler;
+console.log(allowed_routes);
+
+
+function startServer() {
+
+    http.createServer(function(req, res) {
+
+        i_listen_to_stuff(req, res);
+
+    }).listen(8888);
+
+}
+
+exports.startServer = startServer;
+
