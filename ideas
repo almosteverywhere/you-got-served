@@ -1,0 +1,42 @@
+hmm, so now we want to be able to give a directory
+like
+mystuff post handler
+and have that apply to any files under there
+and maybe any directories? i think that would make sense.
+for now let's do one level.
+
+also i feel like the routes could be a better object, let's write that first.]
+
+//ok, can we write a function that says, requested url is this?
+
+//idea from bethany, use a json object
+//var allowedRoutes = {
+//    "/" : "POST",
+//    "/" : "GET"
+//    "/" : {
+//        "GET" : function myhanderfunction() {},
+//        "POST" : getsomefu
+//
+////    }
+//}
+//
+//allowedRoutes["/"]["PUT"] = anotherFunction
+//allowedRoutes["/foo"] == null
+//
+//
+//object["a"] //=> "apple"
+
+//CODE IS a BIG MESS WILL BE CLEANED UP!!!
+
+//how to generalize this so we can get set the path ourselves.
+//start by setting the path in a variable.
+//for this route
+//if the request is get
+//then do this
+//if the request is post
+//then do this
+
+//
+//var allowedroutes = {
+//    myhanderfunction : function
+//}

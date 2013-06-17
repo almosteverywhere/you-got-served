@@ -5,39 +5,16 @@ var path = require('path');
 var qs = require('querystring');
 var ex = require('express');
 
-//CODE IS a BIG MESS WILL BE CLEANED UP!!! 
-
-//how to generalize this so we can get set the path ourselves.
-//start by setting the path in a variable.
-//for this route
-//if the request is get
-//then do this
-//if the request is post
-//then do this
-
-//ok, can we write a function that says, requested url is this?
-
-//var allowed_routes = new Object();
-//allowed_routes[0].name = "/";
-//allowe
-////hmm how to access this stuff? is this an object?
-//allowed_routes['/'] = (["POST", "GET"], my_index_function(request) );
-// we have an object like allowed_routes.name
-// allowed_routes.name.methods
-// allowed_routes.name.method.handler
 
 var myhandler = function get_index(){
     console.log("handler for getting index");
 }
 
-var allowed_routes = new Object();
-allowed_routes["/"] = {};
-/// THIS WORKS!
-//allowed_routes["/"] = ["get", function() { console.log("i am a /"); } ];
-allowed_routes["/"] = ["GET", myhandler];
+var allowed_routes = {};
+allowed_routes[["/", "GET"]] = myhandler;
+console.log(allowed_routes);
 
-//// so this works as a function call, there must be a better way!!!
-///foo["myname"][0][1]();
+
 
 http.createServer(function(request, response) {
 
@@ -76,10 +53,7 @@ http.createServer(function(request, response) {
         body += data;
       });
       request.on('end', function () {
-        //console.log(body)
-        //var POST = qs.parse(body);
-        //console.log(POST)
-            // use POST
+       
         console.log("UPLOAD FILE!!!!!!");
         console.log(request.uploadfile);
 
@@ -94,46 +68,37 @@ http.createServer(function(request, response) {
   };
 }).listen(8888);
 
+function is_allowed_route(request) {
+    var myrequest = request;
+    var myurl = request.url;
+    var mymethod = request.method;
+
+    console.log("request is:" + [request.url, request.method] );
+
+    if ([request.url, request.method] in allowed_routes) {
+        console.log("This is an allowed route!");
+        return true;
+    }
+    else {
+        return false;
+    }
+}
 
 function i_listen_to_stuff(request) {
+    //// YAY!!! DONE!!!!!
     var myurl = request.url;
     var mymethod = request.method;
     console.log("request is:" + myurl);
-    // if it's in there, it will be not =1
-    var index = allowed_routes[myurl].indexOf(mymethod);
-    if (index > -1) {
-        //then call the handler for this thing
-        //ok there's got to be a better way for this
-        // not using arrays!!!
-        //let's make a real object
-        allowed_routes[myurl][1]();
+    // do we need to pass request, is this in the closure?
+    if (is_allowed_route(request)) {
+        //call the handler
+        allowed_routes[[myurl, mymethod]]();
+        //ok some error handling should be happening here
     }
-    //console.log(allowed_routes[request.url]);
-    // can we use this url
-//    if (request.url in allowed_routes) {
-//        // ok, is the request method good?
-//        var index = allowed_routes[request.url].indexOf(request.method);
-//        if (index > -1 ) {
-//        console.log("this is an allowed route");
-//            //send all this info to some things that says
-//            // what to do for this action!
-//        //ok call the function that deals with this!
-//        // how to call this function???
-//
-//        allowed_routes[request.url].request.method[index].handler();
-//    }
-//        else {
-//            console.log("this route is not allowed");
-//            //some kind of error should be happening!
-//        }
-//
-//    }
-//
-//     else {
-//            console.log("this route is not allowed");
-//            //some kind of error page should be happening
-//        }
-
+    else {
+       console.log("This is not an allowed route.");
+       //some error page should be printed out here.
+    }
 }
 
 function get_index(){
